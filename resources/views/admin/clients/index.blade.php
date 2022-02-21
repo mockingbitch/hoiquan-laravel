@@ -1,0 +1,30 @@
+<table>
+    <tr>
+        <th>id</th>
+        <th>name</th>
+        <th>birth</th>
+        <th>email</th>
+        <th>phone</th>
+        <th>karma</th>
+        <th>respect</th>
+        <th>avatar</th>
+        <th>class</th>
+        <th>status</th>
+        <th>created_at</th>
+    </tr>
+    @foreach($clients as $client)
+    <tr>
+        <td>{{$client->id}}</td>
+        <td>{{$client->name}}</td>
+        <td>{{$client->birth}}</td>
+        <td>{{$client->email}}</td>
+        <td>{{$client->phone}}</td>
+        <td>{{$client->karma}}</td>
+        <td>{{$client->respect}}</td>
+        <td>{{$client->avatar}}</td>
+        <td>{{$client->class}}</td>
+        <td>{{$client->status}}</td>
+        <td>{{$client->created_at}}</td>
+    </tr>
+    @endforeach
+</table>
