@@ -3,15 +3,13 @@
 namespace App\Http\Controllers\Api\Home;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
-use App\Models\Tag;
 use App\Repositories\Contracts\RepositoryInterface\CheerRepositoryInterface;
 use App\Repositories\Contracts\RepositoryInterface\ClientRepositoryInterface;
 use App\Repositories\Contracts\RepositoryInterface\CommentRepositoryInterface;
 use App\Repositories\Contracts\RepositoryInterface\PostRepositoryInterface;
 use App\Repositories\Contracts\RepositoryInterface\TagRepositoryInterface;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class HomeController extends Controller
 {
@@ -63,9 +61,9 @@ class HomeController extends Controller
     }
 
     /**
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
-    public function index()
+    public function index() : Response
     {
 //        $post = Post::with('client')->get();
         $client = Auth::guard('client')->user();
@@ -74,12 +72,14 @@ class HomeController extends Controller
         $cheers = $this->cheerRepo->getAll();
         $tags = $this->tagRepo->getAll();
 
-        return response()->json([
-            'client' => $client,
-            'posts' => $posts,
-            'comments' => $comments,
-            'cheers' => $cheers,
-            'tags' => $tags
-        ], 200);
+        return $this->successResponse([
+            'client'=>$client,
+            'posts'=>$posts,
+            'comments'=>$comments,
+            'cheers'=>$cheers,
+            'tags'=>$tags
+        ],
+            'Get all',
+            200);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\RepositoryInterface\TagRepositoryInterface;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class TagController extends Controller
 {
@@ -22,66 +23,81 @@ class TagController extends Controller
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Response
      */
-    public function index()
+    public function index() : Response
     {
         $tags = $this->tagRepo->getAll();
 
-        return view('admin.tags.index', compact('tags'));
-    }
+        if (null == $tags) {
+            return $this->errorResponse('Something went wrong, null given',404);
+        }
 
-    /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
-     */
-    public function create()
-    {
-        return view('admin.tags.create');
+        return $this->successResponse(['tags'=>$tags], 'get all', 200);
     }
 
     /**
      * @param Request $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return Response
      */
-    public function store(Request $request)
+    public function create(Request $request) : Response
     {
-        $this->tagRepo->create($request->toArray());
+        $tag = $this->tagRepo->create($request->toArray());
 
-        return redirect()->back();
+        return $this->successResponse(['tag'=>$tag], 'Created', 201);
     }
 
     /**
-     * @param $id
+     * @param int $id
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Response
      */
-    public function show($id)
+    public function show(int $id) : Response
     {
         $tag = $this->tagRepo->find($id);
-        return view('admin.tags.update',compact('tag'));
+
+        if (null !== $tag) {
+            return $this->errorResponse('Something went wrong, null given', 404);
+        }
+
+        return $this->successResponse(['tag'=>$tag], 'Ok', 200);
     }
 
     /**
-     * @param $id
+     * @param int $id
      * @param Request $request
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return Response
      */
-    public function update($id, Request $request)
+    public function update(int $id, Request $request) : Response
     {
-        $this->tagRepo->update($id,$request->toArray());
-        return redirect()->back();
+        $tag = $this->tagRepo->find($id);
+
+        if (null == $tag) {
+            return $this->errorResponse('Could not find tag',404);
+        }
+
+        $tag = $this->tagRepo->update($id,$request->toArray());
+
+        return $this->successResponse(['tag'=>$tag], 'Updated Successfully', 200);
     }
 
     /**
-     * @param $id
+     * @param int $id
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return Response
      */
-    public function delete($id)
+    public function delete(int $id) : Response
     {
+        $tag = $this->tagRepo->find($id);
+
+        if (null == $tag) {
+            return $this->errorResponse('Could not find tag',404);
+        }
+
         $this->tagRepo->delete($id);
-        return redirect()->back();
+
+        return $this->successResponse([],'Deleted Successfully, 200');
     }
 }

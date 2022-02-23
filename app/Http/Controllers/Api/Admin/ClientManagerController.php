@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\RepositoryInterface\ClientRepositoryInterface;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ClientManagerController extends Controller
 {
@@ -22,24 +23,45 @@ class ClientManagerController extends Controller
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Response
      */
-    public function index()
+    public function index() : Response
     {
         $clients = $this->clientRepo->getAll();
 
-        return view('admin.clients.index', compact('clients'));
+        if (null == $clients) {
+            return $this->errorResponse('Could not find clients',404);
+        }
+
+        return $this->successResponse(['clients'=>$clients],'Get all',200);
+    }
+
+    public function show(int $id) : Response
+    {
+        $client = $this->clientRepo->find($id);
+
+        if (null == $client) {
+            return $this->errorResponse('Could not find client',404);
+        }
+
+        return $this->successResponse(['client'=>$client],'Get client',200);
     }
 
     /**
-     * @param $id
+     * @param int $id
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return Response
      */
-    public function delete($id)
+    public function delete(int $id) : Response
     {
+        $client = $this->clientRepo->find($id);
+
+        if (null == $client) {
+            return $this->errorResponse('Could not find client',404);
+        }
+
         $this->clientRepo->delete($id);
 
-        return redirect()->back();
+        return $this->successResponse([],'Deleted successfully',200);
     }
 }

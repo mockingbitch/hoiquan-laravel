@@ -25,18 +25,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 //FRONT END
-Route::get('/',[HomeController::class,'index'])->name('index');
+Route::get('/', [HomeController::class,'index'])->name('index');
 Route::prefix('post')->group(function (){
-    Route::get('/',[PostController::class,'index'])->name('post.index');
-    Route::post('/',[PostController::class,'create'])->name('post.create');
-    Route::get('/{id}',[PostController::class,'show'])->name('post.show');
-    Route::put('/{id}',[PostController::class,'update'])->name('post.update');
-    Route::delete('/{id}',[PostController::class,'delete'])->name('post.delete');
-    Route::get('/cheer',[CheerController::class,'cheering'])->name('post.cheer');
-    Route::post('/comment',[CommentController::class,'create'])->name('comment.create');
-    Route::get('/comment/{id}',[CommentController::class,'show'])->name('comment.show');
-    Route::put('/comment/{id}',[CommentController::class,'update'])->name('comment.update');
-    Route::delete('/comment{id}',[CommentController::class,'delete'])->name('comment/delete');
+    Route::get('/', [PostController::class,'index'])->name('post.index');
+    Route::post('/', [PostController::class,'create'])->name('post.create');
+    Route::get('/{id}', [PostController::class,'show'])->name('post.show');
+    Route::put('/{id}', [PostController::class,'update'])->name('post.update');
+    Route::delete('/{id}', [PostController::class,'delete'])->name('post.delete');
+    Route::get('/cheer', [CheerController::class,'cheering'])->name('post.cheer');
+    Route::post('/comment', [CommentController::class,'create'])->name('comment.create');
+    Route::get('/comment/{id}', [CommentController::class,'show'])->name('comment.show');
+    Route::put('/comment/{id}', [CommentController::class,'update'])->name('comment.update');
+    Route::delete('/comment{id}', [CommentController::class,'delete'])->name('comment/delete');
 });
 
 

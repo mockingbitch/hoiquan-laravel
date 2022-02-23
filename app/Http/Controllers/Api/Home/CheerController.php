@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Api\Home;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\RepositoryInterface\CheerRepositoryInterface;
+use App\Repositories\Contracts\RepositoryInterface\PostRepositoryInterface;
 use App\Services\CheerService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class CheerController extends Controller
 {
@@ -21,29 +22,42 @@ class CheerController extends Controller
     private $cheerService;
 
     /**
+     * @var PostRepositoryInterface
+     */
+    private $postRepo;
+
+    /**
      * @param CheerRepositoryInterface $cheerRepository
      * @param CheerService $cheerService
      */
     public function __construct(
         CheerRepositoryInterface $cheerRepository,
-        CheerService $cheerService
+        CheerService $cheerService,
+        PostRepositoryInterface $postRepo
     )
     {
         $this->cheerRepo = $cheerRepository;
         $this->cheerService = $cheerService;
+        $this->postRepo = $postRepo;
     }
 
     /**
-     * @param $post
+     * @param int $post
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
-    public function cheering($post)
+    public function cheering(int $post) : Response
     {
+        $post = $this->postRepo->find($post);
+
+        if (null == $post) {
+            return $this->errorResponse('Could not find post', 404);
+        }
+
         $client = Auth::guard('client')->user()->id;
         $this->cheerService->cheer($client, $post);
 
-        return response()->json(['msg'=>'Cheering'],200);
+        return $this->successResponse([], 'Cheering', 200);
     }
 
 }

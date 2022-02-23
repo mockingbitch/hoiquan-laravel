@@ -25,6 +25,7 @@ class ClientService
         $token = strtoupper(Str::random(10));
         $data['rememberToken']=$token;
         $customer = Customer::create($data);
+
         return $customer;
     }
 }

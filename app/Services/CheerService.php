@@ -29,37 +29,35 @@ class CheerService
      */
     public function cheer($client, $post)
     {
-        $cheers = Cheer::where('post',$post)->get();
-        if ($cheers->isEmpty())
-        {
+        $cheers = Cheer::where('post', $post)->get();
+
+        if ($cheers->isEmpty()) {
             Cheer::create([
                 'client' => $client,
                 'post' => $post,
                 'isCheer' => 1
             ]);
         }
-        else if (isset($cheers))
-        {
-            foreach ($cheers as $cheer)
-            {
-                if ($cheer->client == $client)
-                {
+//        else if (isset($cheers))
+        else {
+            foreach ($cheers as $cheer) {
+                if ($cheer->client == $client) {
                     $match = [
                         'post' => $post,
                         'client' => $client
                     ];
-                    if ($cheer->isCheer == 0)
-                    {
+
+                    if ($cheer->isCheer == 0) {
                         Cheer::where($match)->update(['isCheer'=>1]);
 
                     }
-                    else
-                    {
+
+                    else {
                         Cheer::where($match)->update(['isCheer'=>0]);
                     }
                 }
-                else
-                {
+
+                else {
                     Cheer::create([
                         'client' => $client,
                         'post' => $post,
@@ -73,6 +71,6 @@ class CheerService
             'isCheer' => 1
         ])->get();
         $cheerCount = count($cheerss);
-        Post::where('id',$post)->update(['cheers'=>$cheerCount]);
+        Post::where('id', $post)->update(['cheers'=>$cheerCount]);
     }
 }

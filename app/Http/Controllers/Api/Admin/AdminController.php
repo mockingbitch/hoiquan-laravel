@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class AdminController extends Controller
 {
@@ -24,18 +25,17 @@ class AdminController extends Controller
     /**
      * @param Request $request
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return Response
      */
-    public function login(Request $request)
+    public function login(Request $request) : Response
     {
         $credentials =  $request->only('email', 'password');
         if (Auth::guard('admin')->attempt($credentials)) {
-
             return redirect()->route('admin.home');
         }
-        else{
-
-            return view('admin.login')->with('msg','Wrong username or password!!!');
+        else {
+            return $this->errorResponse('Wrong username or password',403);
+//            return view('admin.login')->with('msg','Wrong username or password!!!');
         }
     }
 
@@ -44,8 +44,7 @@ class AdminController extends Controller
      */
     public function loginView()
     {
-        if ($admin = Auth::guard('admin')->user())
-        {
+        if ($admin = Auth::guard('admin')->user()) {
 
             return redirect()->route('admin.home');
         }

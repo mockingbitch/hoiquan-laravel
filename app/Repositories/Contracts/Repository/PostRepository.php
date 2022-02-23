@@ -25,7 +25,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
     public function createPost($client, $request =[])
     {
         $data = [
-          'title'=>$request['title'],
+            'title'=>$request['title'],
             'tag'=>$request['tag'],
             'client'=>$client,
             'content'=>$request['content'],

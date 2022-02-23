@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\RepositoryInterface\CommentRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class CommentController extends Controller
 {
@@ -25,90 +26,88 @@ class CommentController extends Controller
     /**
      * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
-    public function create( Request $request)
+    public function create(Request $request) : Response
     {
         $post = $request->query('post');
-        $client = Auth::guard('client')->user()->id;
-        if (!isset($client))
-        {
-            return response()->json(['msg'=>'Please login to comment'],200);
-        }
-        $comment = $this->commentRepo->createComment($client,$post,$request->toArray());
+        $client = Auth::guard('client')->user();
 
-        return response()->json([
-            'comment'=>$comment,
-            'msg'=>'Created'
-        ],201);
+        if (!isset($client)) {
+            return $this->errorResponse('Please login to comment',200);
+        }
+
+        $clientId = $client->id;
+        $comment = $this->commentRepo->createComment($clientId, $post, $request->toArray());
+
+        return $this->successResponse(['comment'],'Created',201);
     }
 
     /**
-     * @param $id
+     * @param int $id
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
-    public function show($id)
+    public function show(int $id) : Response
     {
         $comment = $this->commentRepo->find($id);
-        if (!isset($comment))
-        {
-            return response()->json(['msg'=>'Could not find comment'],200);
+
+        if (!isset($comment)) {
+            return $this->errorResponse('Could not find comment',200);
         }
 
-        return response()->json([
-            'comment'=>$comment
-        ],200);
+        return $this->successResponse(['comment'=>$comment],'Get comment',200);
     }
 
     /**
-     * @param $id
+     * @param int $id
      * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
-    public function update($id, Request $request)
+    public function update(int $id, Request $request) : Response
     {
-        $client = Auth::guard('client')->user()->id;
-        if (!isset($client))
-        {
-            return response()->json(['msg'=>'Please login to comment'],200);
+        $client = Auth::guard('client')->user();
+
+        if (!isset($client)) {
+            return $this->errorResponse('Please login to comment',200);
         }
+
+        $clientId = $client->id;
         $clientComment = $this->commentRepo->find($id)->client;
-        if (!isset($clientComment))
-        {
-            return response()->json(['msg'=>'Something went wrong'],404);
+
+        if (!isset($clientComment)) {
+            return $this->errorResponse('Something went wrong', 404);
         }
-        if ($clientComment == $client)
-        {
+
+        if ($clientComment == $clientId) {
             $comment = $this->commentRepo->update($id, $request->toArray());
         }
 
-        return response()->json([
-            'comment'=>$comment,
-            'msg'=>'Updated'
-        ],200);
+       return $this->successResponse(['comment'=>$comment],'Updated Successfully',200);
     }
 
     /**
-     * @param $id
+     * @param int $id
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
-    public function delete($id)
+    public function delete(int $id) : Response
     {
-        $client = Auth::guard('client')->user()->id;
-        if (!isset($client))
-        {
+        $client = Auth::guard('client')->user();
+
+        if (!isset($client)) {
             return response()->json(['msg'=>'Something went wrong'],404);
         }
+
+        $clientId = $client->id;
         $clientComment = $this->commentRepo->find($id)->client;
-        if (!isset($clientComment))
-        {
+
+        if (!isset($clientComment)) {
             return response()->json(['msg'=>'Something went wrong'],404);
         }
-        if ($clientComment == $client)
-        {
+
+        if ($clientComment == $clientId) {
             $this->commentRepo->delete($id);
         }
 
